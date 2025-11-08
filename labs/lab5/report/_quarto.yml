@@ -36,8 +36,8 @@ format:
     fontsize: 12pt
     linestretch: 1.5
 #### Language
-    babel-lang: russian
-    babel-otherlangs: english
+    babel-lang: ru
+    babel-otherlangs: en
 #### Biblatex
     cite-method: biblatex
     # biblio-style: gost-numeric
