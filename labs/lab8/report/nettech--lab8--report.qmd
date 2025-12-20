@@ -1,67 +1,1614 @@
 ---
+# Preamble
+
 ## Author
 author:
-  name: Дмитрий Сергеевич Кулябов
-  degrees: DSc
-  orcid: 0000-0002-0877-7063
-  email: kulyabov-ds@rudn.ru
+  name: Калашникова Ольга Сергеевна
+  email: 1132231846@rudn.ru
   affiliation:
     - name: Российский университет дружбы народов
       country: Российская Федерация
       postal-code: 117198
       city: Москва
       address: ул. Миклухо-Маклая, д. 6
-
 ## Title
-title: "Шаблон отчёта по лабораторной работе"
-subtitle: "Простейший вариант"
+title: "Отчёт по лабораторной работе №8"
+subtitle: "Дисциплина: Сетевые технологии"
 license: "CC BY"
+## Generic options
+lang: ru-RU
+number-sections: true
+toc: true
+toc-title: "Содержание"
+toc-depth: 3
+## Crossref customization
+crossref:
+  lof-title: "Список иллюстраций"
+  lot-title: "Список таблиц"
+  lol-title: "Листинги"
+## Bibliography
+bibliography:
+  - bib/cite.bib
+csl: _resources/csl/gost-r-7-0-5-2008-numeric.csl
+## Formats
+format:
+### Pdf output format
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: false
+    toc-depth: 3
+    lof: true # List of figures
+    lot: true # List of tables
+#### Document
+    documentclass: scrreprt
+    papersize: a4
+    fontsize: 12pt
+    linestretch: 1.5
+#### Language
+    babel-lang: russian
+    babel-otherlangs: english
+#### Biblatex
+    cite-method: biblatex
+    biblio-style: gost-numeric
+    biblatexoptions:
+      - backend=biber
+      - langhook=extras
+      - autolang=other*
+#### Misc options
+    csquotes: true
+    indent: true
+    header-includes: |
+      \usepackage{indentfirst}
+      \usepackage{float}
+      \floatplacement{figure}{H}
+      \usepackage[math,RM={Scale=0.94},SS={Scale=0.94},SScon={Scale=0.94},TT={Scale=MatchLowercase,FakeStretch=0.9},DefaultFeatures={Ligatures=Common}]{plex-otf}
+### Docx output format
+  docx:
+    toc: true
+    number-sections: true
+    toc-depth: 3
 ---
 
 # Цель работы
 
-Здесь приводится формулировка цели лабораторной работы.
-Формулировки цели для каждой лабораторной работы приведены в методических указаниях.
-
-Цель данного шаблона --- максимально упростить подготовку отчётов по лабораторным работам.
-Модифицируя данный шаблон, студенты смогут без труда подготовить отчёт по лабораторным работам, а также познакомиться с основными возможностями разметки Markdown.
+Целью данной работы является изучение принципов маршрутизации в IPv4- и IPv6-сетях и принципов настройки сетевого оборудования.
 
 # Задание
 
-Здесь приводится описание задания в соответствии с рекомендациями методического пособия и выданным вариантом.
+1. Требуется настроить динамическую маршрутизацию по протоколам RIP, OSPF
+2. Требуется организовать туннель IPv6 поверх IPv4, позволяющий передавать данные из одной IPv6-сети в другую IPv6-сеть через сеть IPv4.
+3. Выполнить задание для самостоятельного выполнения
 
-# Теоретическое введение
+Запустили GNS3 VM и GNS3 и создали новый проект ([рис. @fig-001]).
 
-Здесь описываются теоретические аспекты, связанные с выполнением работы.
-
-Например, в [табл. @tbl-std-dir] приведено краткое описание стандартных каталогов Unix.
-
-| Имя каталога | Описание каталога                                                                                                          |
-|--------------|----------------------------------------------------------------------------------------------------------------------------|
-| `/`          | Корневая директория, содержащая всю файловую                                                                               |
-| `/bin `      | Основные системные утилиты, необходимые как в однопользовательском режиме, так и при обычной работе всем пользователям     |
-| `/etc`       | Общесистемные конфигурационные файлы и файлы конфигурации установленных программ                                           |
-| `/home`      | Содержит домашние директории пользователей, которые, в свою очередь, содержат персональные настройки и данные пользователя |
-| `/media`     | Точки монтирования для сменных носителей                                                                                   |
-| `/root`      | Домашняя директория пользователя  `root`                                                                                   |
-| `/tmp`       | Временные файлы                                                                                                            |
-| `/usr`       | Вторичная иерархия для данных пользователя                                                                                 |
-
-: Описание некоторых каталогов файловой системы GNU Linux {#tbl-std-dir}
-
-Более подробно про Unix см. в [@tanenbaum_book_modern-os_ru; @robbins_book_bash_en; @zarrelli_book_mastering-bash_en; @newham_book_learning-bash_en].
+![Конфигурации сети](image/1.png){#fig-001 width=70%}
 
 # Выполнение лабораторной работы
 
-Описываются проведённые действия, в качестве иллюстрации даётся ссылка на иллюстрацию ([рис. @fig-001]).
+## Настройка динамической маршрутизации в сетях IPv4 и IPv6
 
-![V Сольвеевский конгресс (1927) «Электроны и фотоны»](image/solvay.jpg){#fig-001 width=70%}
+Запустили GNS3 VM и GNS3 и создали новый проект ([рис. @fig-001]).
+
+![Конфигурации сети](image/1.png){#fig-001 width=70%}
+
+В рабочем пространстве разместили и соединили устройства в соответствии с топологией. Использовали маршрутизаторы FRR. Изменили отображаемые названия устройств: маршрутизаторам присвоили названия по принципу msk-oskalashnikova-gw-0x, VPCS — по принципу PCx-oskalashnikova. Включили захват трафика на соединении между коммутатором sw-01 и маршрутизатором gw-01, а также между коммутатором sw-02 и маршрутизатором gw-03.
+
+Присвоили IPv4-адреса оконечным устройствам PC1 и PC2 в соответствии с данными:
+
+PC1 ([рис. @fig-002]):
+```
+ip 10.0.10.10/24 10.0.10.1
+save
+show ip
+```
+
+![Настройка IPv4 на PC1](image/2.png){#fig-002 width=70%}
+
+PC2 ([рис. @fig-003]):
+```
+ip 10.0.11.10/24 10.0.11.1
+save
+show ip
+```
+
+![Настройка IPv4 на PC2](image/3.png){#fig-003 width=70%}
+
+Настроили IPv4-адреса на интерфейсах маршрутизаторов:
+
+msk-oskalashnikova-gw-01 ([рис. @fig-004]):
+```
+frr# configure terminal
+frr(config)# hostname msk-oskalashnikova-gw-01
+msk-oskalashnikova-gw-01(config)# interface eth0
+msk-oskalashnikova-gw-01(config-if)# ip address 10.0.10.1/24
+msk-oskalashnikova-gw-01(config-if)# no shutdown
+msk-oskalashnikova-gw-01(config-if)# exit
+msk-oskalashnikova-gw-01(config)# interface eth1
+msk-oskalashnikova-gw-01(config-if)# ip address 10.0.1.1/24
+msk-oskalashnikova-gw-01(config-if)# no shutdown
+msk-oskalashnikova-gw-01(config-if)# exit
+msk-oskalashnikova-gw-01(config)# interface eth2
+msk-oskalashnikova-gw-01(config-if)# ip address 10.0.4.2/24
+msk-oskalashnikova-gw-01(config-if)# no shutdown
+msk-oskalashnikova-gw-01(config-if)# exit
+msk-oskalashnikova-gw-01(config)# exit
+msk-oskalashnikova-gw-01# write memory
+msk-oskalashnikova-gw-01# show running-config
+```
+
+![Настройка IPv4 на gw-01](image/4.png){#fig-004 width=70%}
+
+msk-oskalashnikova-gw-02 ([рис. @fig-005]):
+```
+configure terminal
+interface eth0
+ip address 10.0.1.2/24
+no shutdown
+exit
+interface eth1
+ip address 10.0.2.1/24
+no shutdown
+exit
+exit
+write memory
+show running-config
+```
+
+![Настройка IPv4 на gw-02](image/5.png){#fig-005 width=70%}
+
+msk-oskalashnikova-gw-03 ([рис. @fig-006]):
+```
+configure terminal
+interface eth0
+ip address 10.0.11.1/24
+no shutdown
+exit
+interface eth1
+ip address 10.0.2.2/24
+no shutdown
+exit
+interface eth2
+ip address 10.0.3.1/24
+no shutdown
+exit
+exit
+write memory
+show running-config
+```
+
+![Настройка IPv4 на gw-03](image/6.png){#fig-006 width=70%}
+
+msk-oskalashnikova-gw-04 ([рис. @fig-007]):
+```
+configure terminal
+interface eth0
+ip address 10.0.3.2/24
+no shutdown
+exit
+interface eth1
+ip address 10.0.4.1/24
+no shutdown
+exit
+exit
+write memory
+show running-config
+```
+
+![Настройка IPv4 на gw-04](image/7.png){#fig-007 width=70%}
+
+Присвоили IPv6-адреса оконечным устройствам PC1 и PC2 в соответствии с данными:
+
+PC1 ([рис. @fig-008]):
+```
+ip 2001:10::a/64
+save
+show ipv6
+```
+
+![Настройка IPv6 на PC1](image/8.png){#fig-008 width=70%}
+
+PC2 ([рис. @fig-009]):
+```
+ip 2001:11::a/64
+save
+show ipv6
+```
+
+![Настройка IPv6 на PC2](image/9.png){#fig-009 width=70%}
+
+Настроили IPv6-адреса на интерфейсах маршрутизаторов с включением IPv6-форвардинга (ipv6 forwarding):
+
+msk-oskalashnikova-gw-01 ([рис. @fig-010]):
+```
+configure terminal
+ipv6 forwarding
+interface eth0
+ipv6 address 2001:10::1/64
+no ipv6 nd suppress-ra
+ipv6 nd prefix 2001:10::/64
+no shutdown
+exit
+interface eth1
+ipv6 address 2001:1::1/64
+no shutdown
+exit
+interface eth2
+ipv6 address 2001:4::2/64
+no shutdown
+exit
+exit
+write memory
+show running-config
+```
+
+![Настройка IPv6 на gw-01](image/10.png){#fig-010 width=70%}
+
+msk-oskalashnikova-gw-02 ([рис. @fig-011]):
+```
+configure terminal
+ipv6 forwarding
+interface eth0
+ipv6 address 2001:1::2/64
+no shutdown
+exit
+interface eth1
+ipv6 address 2001:2::1/64
+no shutdown
+exit
+exit
+write memory
+show running-config
+```
+
+![Настройка IPv6 на gw-02](image/11.png){#fig-011 width=70%}
+
+msk-oskalashnikova-gw-03 ([рис. @fig-012]):
+```
+configure terminal
+ipv6 forwarding
+interface eth0
+ipv6 address 2001:11::1/64
+no ipv6 nd suppress-ra
+ipv6 nd prefix 2001:11::/64
+no shutdown
+exit
+interface eth1
+ipv6 address 2001:2::2/64
+no shutdown
+exit
+interface eth2
+ipv6 address 2001:3::1/64
+no shutdown
+exit
+exit
+write memory
+show running-config
+```
+
+![Настройка IPv6 на gw-03](image/12.png){#fig-012 width=70%}
+
+msk-oskalashnikova-gw-04 ([рис. @fig-013]):
+```
+configure terminal
+ipv6 forwarding
+interface eth0
+ipv6 address 2001:3::2/64
+no shutdown
+exit
+interface eth1
+ipv6 address 2001:4::1/64
+no shutdown
+exit
+exit
+write memory
+show running-config
+```
+
+![Настройка IPv6 на gw-04](image/13.png){#fig-013 width=70%}
+
+Таким образом, базовая настройка IPv4 и IPv6 адресации на всех устройствах сети завершена.
+
+### Настройка динамической маршрутизации по протоколу RIP
+
+На маршрутизаторах настроили RIP в качестве протокола динамической маршрутизации версии 2:
+
+**msk-oskalashnikova-gw-01** ([рис. @fig-014]):
+```
+configure terminal
+router rip
+version 2
+network eth0
+network eth1
+network eth2
+exit
+exit
+write memory
+```
+![Настройка RIP на gw-01](image/14.png){#fig-014 width=70%}
+
+**msk-oskalashnikova-gw-02** ([рис. @fig-015]):
+```
+configure terminal
+router rip
+version 2
+network eth0
+network eth1
+exit
+exit
+write memory
+```
+![Настройка RIP на gw-02](image/15.png){#fig-015 width=70%}
+
+**msk-oskalashnikova-gw-03** ([рис. @fig-016]):
+```
+configure terminal
+router rip
+version 2
+network eth0
+network eth1
+network eth2
+exit
+exit
+write memory
+```
+![Настройка RIP на gw-03](image/16.png){#fig-016 width=70%}
+
+**msk-oskalashnikova-gw-04** ([рис. @fig-017]):
+```
+configure terminal
+router rip
+version 2
+network eth0
+network eth1
+exit
+exit
+write memory
+```
+![Настройка RIP на gw-04](image/17.png){#fig-017 width=70%}
+
+Убедились, что маршрутизация по RIP настроена, проверив таблицы маршрутизации и статус протокола на каждом маршрутизаторе:
+
+**msk-oskalashnikova-gw-01** ([рис. @fig-018]):
+```
+show ip route rip
+show ip rip
+show ip rip status
+```
+![Таблицы RIP на gw-01](image/18.png){#fig-018 width=70%}
+
+**msk-oskalashnikova-gw-02** ([рис. @fig-019]):
+```
+show ip route rip
+show ip rip
+show ip rip status
+```
+![Таблицы RIP на gw-02](image/19.png){#fig-019 width=70%}
+
+**msk-oskalashnikova-gw-03** ([рис. @fig-020]):
+```
+show ip route rip
+show ip rip
+show ip rip status
+```
+![Таблицы RIP на gw-03](image/20.png){#fig-020 width=70%}
+
+**msk-oskalashnikova-gw-04** ([рис. @fig-021]):
+```
+show ip route rip
+show ip rip
+show ip rip status
+```
+![Таблицы RIP на gw-04](image/21.png){#fig-021 width=70%}
+
+Из представленных выводов видно, что все маршрутизаторы успешно обмениваются маршрутами через RIP. Например, на маршрутизаторе gw-01 имеются маршруты до сетей 10.0.2.0/24 (метрика 2), 10.0.3.0/24 (метрика 2) и 10.0.11.0/24 (метрика 3), полученные от соседей 10.0.1.2 (gw-02) и 10.0.4.1 (gw-04).
+
+Проверили пути прохождения пакетов и работу протокола:
+- С PC1 выполнили ping и trace до PC2 ([рис. @fig-022]):
+```
+ping 10.0.11.10
+trace 10.0.11.10 -P 6
+```
+![Проверка связи PC1-PC2](image/22.png){#fig-022 width=70%}
+
+Результаты показывают, что пакеты проходят по пути: PC1 (10.0.10.10) → gw-01 (10.0.10.1) → gw-02 (10.0.1.2) → gw-03 (10.0.2.2) → PC2 (10.0.11.10). Это соответствует маршруту с наименьшей метрикой (через gw-02).
+
+- Проверили метрики RIP на gw-01 после начальной настройки ([рис. @fig-023]):
+```
+show ip rip
+```
+![Метрики RIP на gw-01](image/23.png){#fig-023 width=70%}
+
+В таблице видно, что маршрут до сети 10.0.11.0/24 имеет метрику 3 и получен от соседа 10.0.1.2 (gw-02).
+
+- Для проверки устойчивости протокола отключили интерфейс eth0 на маршрутизаторе gw-02 ([рис. @fig-024]):
+```
+configure terminal
+interface eth0
+shutdown
+```
+![Отключение интерфейса eth0 на gw-02](image/24.png){#fig-024 width=70%}
+
+- С PC1 снова выполнили ping и trace до PC2 ([рис. @fig-025]):
+```
+ping 10.0.11.10
+trace 10.0.11.10 -P 6
+```
+![Проверка связи после отключения gw-02 eth0](image/25.png){#fig-025 width=70%}
+
+Теперь пакеты идут по альтернативному пути: PC1 → gw-01 → gw-04 (10.0.4.1) → gw-03 (10.0.3.1) → PC2. Маршрут перестроился, что демонстрирует работу механизма сходимости протокола RIP. Время восстановления связи составило несколько десятков секунд (время, необходимое для обнаружения недоступности соседа и обновления таблиц).
+
+- Включили интерфейс eth0 на маршрутизаторе gw-02 обратно ([рис. @fig-026]):
+```
+configure terminal
+interface eth0
+no shutdown
+```
+![Включение интерфейса eth0 на gw-02](image/26.png){#fig-026 width=70%}
+
+- После восстановления связи проверили путь с PC1 до PC2 ([рис. @fig-027]):
+```
+ping 10.0.11.10
+trace 10.0.11.10 -P 6
+```
+![Проверка связи после восстановления gw-02](image/27.png){#fig-027 width=70%}
+
+Пакеты снова пошли по первоначальному маршруту через gw-02, так как он обладает меньшей метрикой (путь через gw-01→gw-02→gw-03 имеет метрику 3, а через gw-01→gw-04→gw-03 — метрику 3, но, видимо, при равной метрике выбирается первый полученный или маршрут с меньшим административным расстоянием/адресом следующего перехода).
+
+- **Анализ захваченного трафика для IPv4 RIP**:
+
+На скриншотах захвата трафика ([рис. @fig-028], [рис. @fig-029]) видна работа протокола RIPv2. Пакеты обновлений маршрутизации отправляются на групповой адрес `224.0.0.9` каждые 30 секунд (интервал виден в пакетах с номерами около 371, 372, 374 и т.д.). В них содержатся объявления о сетях (например, `10.0.10.0/24`, `10.0.1.0/24`). Также видны ICMP-пакеты (ping-запросы и ответы) между PC1 (`10.0.10.10`) и PC2 (`10.0.11.10`), а также ARP-запросы для разрешения MAC-адресов. Это показывает, что RIP успешно распространяет информацию о маршрутах, и на её основе осуществляется передача пользовательского трафика.
+
+![Захват трафика RIPv2](image/28.png){#fig-028 width=70%}
+![Захват трафика RIPv2 и ICMP](image/29.png){#fig-029 width=70%}
+
+### Настройка динамической маршрутизации по протоколу RIPng для IPv6
+
+На маршрутизаторах настроили RIPng для сетей IPv6:
+
+**msk-oskalashnikova-gw-01** ([рис. @fig-030]):
+```
+configure terminal
+router ripng
+network eth0
+network eth1
+network eth2
+exit
+exit
+write memory
+```
+![Настройка RIPng на gw-01](image/30.png){#fig-030 width=70%}
+
+**msk-oskalashnikova-gw-02** ([рис. @fig-031]):
+```
+configure terminal
+router ripng
+network eth0
+network eth1
+exit
+exit
+write memory
+```
+![Настройка RIPng на gw-02](image/31.png){#fig-031 width=70%}
+
+**msk-oskalashnikova-gw-03** ([рис. @fig-032]):
+```
+configure terminal
+router ripng
+network eth0
+network eth1
+network eth2
+exit
+exit
+write memory
+```
+![Настройка RIPng на gw-03](image/32.png){#fig-032 width=70%}
+
+**msk-oskalashnikova-gw-04** ([рис. @fig-033]):
+```
+configure terminal
+router ripng
+network eth0
+network eth1
+exit
+exit
+write memory
+```
+![Настройка RIPng на gw-04](image/33.png){#fig-033 width=70%}
+
+Проверили пути прохождения пакетов IPv6:
+- С PC1 выполнили ping и trace до PC2 ([рис. @fig-034]):
+```
+ping 2001:11::a
+trace 2001:11::a
+```
+![Проверка связи IPv6 PC1-PC2](image/34.png){#fig-034 width=70%}
+
+Результаты показывают, что пакеты проходят по пути: PC1 (`2001:10::a`) → gw-01 (`2001:10::1`) → gw-02 (`2001:1::2`) → gw-03 (`2001:2::2`) → PC2 (`2001:11::a`). Это соответствует пути через маршрутизатор gw-02.
+
+- Проверили метрики протокола RIPng на gw-01 ([рис. @fig-035], [рис. @fig-038]):
+```
+show ipv6 ripng
+```
+![Таблица RIPng на gw-01 (начальная)](image/35.png){#fig-035 width=70%}
+![Таблица RIPng на gw-01 (детально)](image/38.png){#fig-038 width=70%}
+
+В таблице видно, что маршрут до сети `2001:11::/64` имеет метрику 3 и получен через интерфейс `eth1` от соседа с адресом `fe80::e42:8dff:fef9:0` (gw-02). Также имеются маршруты до других сетей с метрикой 2.
+
+- Для проверки устойчивости протокола отключили интерфейс eth0 на маршрутизаторе gw-02 ([рис. @fig-036]):
+```
+configure terminal
+interface eth0
+shutdown
+```
+![Отключение интерфейса eth0 на gw-02 для IPv6](image/36.png){#fig-036 width=70%}
+
+- Проверили метрики RIPng на gw-01 после отключения ([рис. @fig-038]). В таблице видно, что маршрут до сети `2001:11::/64` теперь получен через интерфейс `eth2` от соседа `fe80::e29:b1ff:fe49:1` (gw-04) с метрикой 3.
+
+- С PC1 выполнили ping и trace до PC2 ([рис. @fig-037]):
+```
+ping 2001:11::a
+trace 2001:11::a
+```
+![Проверка связи IPv6 после отключения gw-02 eth0](image/37.png){#fig-037 width=70%}
+
+Теперь пакеты идут по альтернативному пути: PC1 → gw-01 → gw-04 (`2001:4::1`) → gw-03 (`2001:3::1`) → PC2. Маршрут перестроился, что подтверждает корректную работу сходимости RIPng. Время восстановления составило аналогично RIP для IPv4 – несколько десятков секунд.
+
+- Включили интерфейс eth0 на маршрутизаторе gw-02 обратно ([рис. @fig-039]):
+```
+configure terminal
+interface eth0
+no shutdown
+```
+![Включение интерфейса eth0 на gw-02 для IPv6](image/39.png){#fig-039 width=70%}
+
+- После восстановления связи проверили путь с PC1 до PC2 ([рис. @fig-040]):
+```
+ping 2001:11::a
+trace 2001:11::a
+```
+![Проверка связи IPv6 после восстановления gw-02](image/40.png){#fig-040 width=70%}
+
+Пакеты снова пошли по первоначальному маршруту через gw-02.
+
+- **Анализ захваченного трафика для IPv6 RIPng**:
+
+На скриншотах захвата трафика ([рис. @fig-041], [рис. @fig-042]) видна работа протокола RIPng. Обновления маршрутизации отправляются на групповой адрес `ff02::9`. Видны ICMPv6 Echo Request и Reply (ping) между адресами `2001:10::a` и `2001:11::a`. Также присутствуют пакеты Neighbor Solicitation для разрешения адресов канального уровня и периодические RIPng Response. Это показывает корректный обмен маршрутной информацией и передачу данных поверх IPv6.
+
+![Захват трафика RIPng и ICMPv6 (часть 1)](image/41.png){#fig-041 width=70%}
+![Захват трафика RIPng и ICMPv6 (часть 2)](image/42.png){#fig-042 width=70%}
+
+### Настройка динамической маршрутизации по протоколу OSPF
+
+На маршрутизаторах настроили OSPFv2 для сетей IPv4 в области 0.0.0.0 (Backbone area):
+
+**msk-oskalashnikova-gw-01** ([рис. @fig-043]):
+```
+configure terminal
+router ospf
+network 10.0.10.0/24 area 0.0.0.0
+network 10.0.1.0/24 area 0.0.0.0
+network 10.0.4.0/24 area 0.0.0.0
+exit
+exit
+write memory
+```
+![Настройка OSPF на gw-01](image/43.png){#fig-043 width=70%}
+
+**msk-oskalashnikova-gw-02** ([рис. @fig-044]):
+```
+configure terminal
+router ospf
+network 10.0.1.0/24 area 0.0.0.0
+network 10.0.2.0/24 area 0.0.0.0
+exit
+exit
+write memory
+```
+![Настройка OSPF на gw-02](image/44.png){#fig-044 width=70%}
+
+**msk-oskalashnikova-gw-03** ([рис. @fig-045]):
+```
+configure terminal
+router ospf
+network 10.0.11.0/24 area 0.0.0.0
+network 10.0.2.0/24 area 0.0.0.0
+network 10.0.3.0/24 area 0.0.0.0
+exit
+exit
+write memory
+```
+![Настройка OSPF на gw-03](image/45.png){#fig-045 width=70%}
+
+**msk-oskalashnikova-gw-04** ([рис. @fig-046]):
+```
+configure terminal
+router ospf
+network 10.0.3.0/24 area 0.0.0.0
+network 10.0.4.0/24 area 0.0.0.0
+exit
+exit
+write memory
+```
+![Настройка OSPF на gw-04](image/46.png){#fig-046 width=70%}
+
+Проверили маршрутизацию OSPF:
+
+**1. Проверка связи между PC1 и PC2**:
+С PC1 выполнили ping и trace до PC2 ([рис. @fig-047]):
+
+```
+ping 10.0.11.10
+trace 10.0.11.10 -P 6
+```
+
+![Проверка связи PC1-PC2 по OSPF](image/47.png){#fig-047 width=70%}
+
+Пакеты прошли по маршруту:
+- PC1 (10.0.10.10)
+- gw-01 (10.0.10.1)
+- gw-02 (10.0.1.2)
+- gw-03 (10.0.2.2)
+- PC2 (10.0.11.10)
+
+Это показывает, что OSPF выбрал кратчайший путь через маршрутизатор gw-02.
+
+**2. Проверка таблиц OSPF на gw-01** ([рис. @fig-048]):
+
+```
+show ip ospf neighbor
+show ip ospf route
+```
+
+![Таблицы OSPF на gw-01](image/48.png){#fig-048 width=70%}
+
+Из вывода команд видно:
+- У маршрутизатора два соседа OSPF:
+  - 10.0.2.1 (gw-02) через интерфейс eth1 в состоянии Full/Backup (DR/BDR выбор)
+  - 10.0.4.1 (gw-04) через интерфейс eth2 в состоянии Full/Backup
+- В таблице маршрутов OSPF отображаются сети с указанием стоимости (метрики):
+  - 10.0.1.0/24 - непосредственно подключенная сеть (стоимость 100)
+  - 10.0.2.0/24 - через 10.0.1.2 (стоимость 200)
+  - 10.0.3.0/24 - через 10.0.4.1 (стоимость 200)
+  - 10.0.4.0/24 - непосредственно подключенная сеть (стоимость 100)
+  - 10.0.10.0/24 - непосредственно подключенная сеть (стоимость 100)
+  - 10.0.11.0/24 - два равноценных пути:
+    - через 10.0.1.2 (стоимость 300)
+    - через 10.0.4.1 (стоимость 300)
+
+**3. Проверка отказоустойчивости OSPF**:
+
+Отключили интерфейс eth0 на маршрутизаторе gw-02, который был частью основного пути ([рис. @fig-024]):
+
+```
+configure terminal
+interface eth0
+shutdown
+```
+
+![Отключение интерфейса eth0 на gw-02](image/24.png){#fig-024 width=70%}
+
+**4. Проверка таблиц OSPF после отключения пути** ([рис. @fig-049]):
+
+```
+show ip ospf neighbor
+show ip ospf route
+```
+
+![Таблицы OSPF на gw-01 после отключения gw-02](image/49.png){#fig-049 width=70%}
+
+После отключения gw-02:
+- Остался только один сосед OSPF: 10.0.4.1 (gw-04)
+- Из таблицы маршрутов исчез маршрут через 10.0.1.2
+- Маршрут до сети 10.0.2.0/24 теперь идет через 10.0.4.1 с увеличенной стоимостью (300 вместо 200)
+- Маршрут до сети 10.0.11.0/24 теперь только через 10.0.4.1 с той же стоимостью 300
+
+**5. Проверка связи после изменения топологии** ([рис. @fig-050]):
+
+```
+ping 10.0.11.10
+trace 10.0.11.10 -P 6
+```
+
+![Проверка связи PC1-PC2 после отключения gw-02](image/50.png){#fig-050 width=70%}
+
+Теперь пакеты идут по альтернативному пути:
+- PC1 (10.0.10.10)
+- gw-01 (10.0.10.1)
+- gw-04 (10.0.4.1)
+- gw-03 (10.0.3.1)
+- PC2 (10.0.11.10)
+
+Время перехода на резервный маршрут составило несколько секунд (быстрее, чем у RIP), что демонстрирует преимущества протокола состояния канала.
+
+**6. Восстановление первоначального пути** ([рис. @fig-051]):
+
+Включили интерфейс eth0 на маршрутизаторе gw-02:
+
+```
+configure terminal
+interface eth0
+no shutdown
+```
+
+![Включение интерфейса eth0 на gw-02](image/51.png){#fig-051 width=70%}
+
+**7. Проверка связи после восстановления** ([рис. @fig-052]):
+
+```
+ping 10.0.11.10
+trace 10.0.11.10 -P 6
+```
+
+![Проверка связи PC1-PC2 после восстановления gw-02](image/52.png){#fig-052 width=70%}
+
+После восстановления интерфейса пакеты снова пошли по первоначальному маршруту через gw-02, что подтверждает корректное восстановление связности OSPF.
+
+**8. Анализ захваченного трафика OSPF** ([рис. @fig-053]):
+
+![Захват трафика OSPF](image/53.png){#fig-053 width=70%}
+
+На скриншоте анализатора трафика видны:
+- Пакеты OSPF Hello, отправляемые на групповой адрес `224.0.0.5` для обнаружения соседей
+- Пакеты RIPv2 на адрес `224.0.0.9` (так как RIP также был настроен ранее)
+- Пакеты RIPng на адрес `ff02::9` (для IPv6)
+- ICMP-пакеты (ping) между PC1 и PC2
+- ARP-запросы для разрешения MAC-адресов
+
+**Анализ захваченного трафика OSPFv2 и OSPFv3** ([рис. @fig-054]):
+
+![Захват трафика OSPFv2 и OSPFv3](image/54.png){#fig-054 width=70%}
+
+На скриншоте анализатора трафика видна одновременная работа нескольких протоколов:
+
+1. **ICMPv6 Router Advertisement** (строка 690):
+   - Отправляется с адреса `fe80::e7a:e0ff:fe28...` на групповой адрес `ff02::1`
+   - Служит для автоматической настройки IPv6-адресов на хостах
+
+2. **OSPFv2 Hello Packet** (строка 691):
+   - Отправляется с `10.0.11.1` на `224.0.0.5`
+   - Подтверждает работу OSPFv2 на маршрутизаторе gw-03
+
+3. **RIPng Response** (строка 692):
+   - Отправляется с `fe80::e7a:e0ff:fe28...` на `ff02::9`
+   - Показывает, что RIPng продолжает работать параллельно с OSPF
+
+4. **ICMP Echo (ping) пакеты** (строки 693-701):
+   - Запросы и ответы между `10.0.10.10` (PC1) и `10.0.11.10` (PC2)
+   - Демонстрируют работоспособность маршрутизации между конечными устройствами
+
+5. **ARP-запросы** (строки 694-695, 706-707):
+   - Разрешение MAC-адресов для IPv4-адресов
+   - Например: "Who has 10.0.11.1? Tell 10.0.11.10"
+
+6. **Периодические OSPF Hello-пакеты** (строки 708-721):
+   - Регулярная отправка на адрес `224.0.0.5` каждые несколько секунд
+   - Подтверждают поддержание соседских отношений OSPF
+
+**Анализ захваченного трафика позволяет сделать следующие выводы:**
+
+1. **Сосуществование протоколов**: В сети одновременно работают OSPFv2, OSPFv3, RIPv2, RIPng и статическая маршрутизация, что демонстрирует возможность сосуществования различных протоколов маршрутизации.
+
+2. **Приоритет маршрутов**: Несмотря на наличие нескольких протоколов, пакеты проходят по оптимальным маршрутам, что свидетельствует о корректной работе алгоритмов выбора маршрутов на основе административного расстояния.
+
+3. **Быстрая сходимость OSPF**: При отключении интерфейсов перестроение маршрутов происходит за несколько секунд, что значительно быстрее по сравнению с RIP (десятки секунд).
+
+4. **Различие между IPv4 и IPv6**: 
+   - OSPFv2 использует групповой адрес `224.0.0.5` (Hello) и `224.0.0.6` (DR/BDR)
+   - OSPFv3 использует `ff02::5` и `ff02::6` соответственно
+   - Различные механизмы соседского обнаружения (в OSPFv3 используется NDP)
+
+5. **Накладные расходы**: Регулярная отправка служебных пакетов (Hello, обновления маршрутов) создает незначительную нагрузку на сеть, которая оправдана преимуществами динамической маршрутизации.
+
+### Настройка динамической маршрутизации по протоколу OSPFv3 для IPv6
+
+На маршрутизаторах настроили OSPFv3 для сетей IPv6 в области 0 (Backbone area). В отличие от OSPFv2, в OSPFv3 настройка выполняется на интерфейсах, а не через команду network:
+
+**msk-oskalashnikova-gw-01** ([рис. @fig-055]):
+```
+configure terminal
+router ospf6
+ospf6 router-id 1.1.1.1
+exit
+interface eth0
+ipv6 ospf6 area 0
+exit
+interface eth1
+ipv6 ospf6 area 0
+exit
+interface eth2
+ipv6 ospf6 area 0
+exit
+exit
+write memory
+```
+![Настройка OSPFv3 на gw-01](image/55.png){#fig-055 width=70%}
+
+**msk-oskalashnikova-gw-02** ([рис. @fig-056]):
+```
+configure terminal
+router ospf6
+ospf6 router-id 2.2.2.2
+exit
+interface eth0
+ipv6 ospf6 area 0
+exit
+interface eth1
+ipv6 ospf6 area 0
+exit
+exit
+write memory
+```
+![Настройка OSPFv3 на gw-02](image/56.png){#fig-056 width=70%}
+
+**msk-oskalashnikova-gw-03** ([рис. @fig-057]):
+```
+configure terminal
+router ospf6
+ospf6 router-id 3.3.3.3
+exit
+interface eth0
+ipv6 ospf6 area 0
+exit
+interface eth1
+ipv6 ospf6 area 0
+exit
+interface eth2
+ipv6 ospf6 area 0
+exit
+exit
+write memory
+```
+![Настройка OSPFv3 на gw-03](image/57.png){#fig-057 width=70%}
+
+**msk-oskalashnikova-gw-04** ([рис. @fig-058]):
+```
+configure terminal
+router ospf6
+ospf6 router-id 4.4.4.4
+exit
+interface eth0
+ipv6 ospf6 area 0
+exit
+interface eth1
+ipv6 ospf6 area 0
+exit
+exit
+write memory
+```
+![Настройка OSPFv3 на gw-04](image/58.png){#fig-058 width=70%}
+
+**9. Проверка связи между PC1 и PC2 по IPv6 после настройки OSPFv3** ([рис. @fig-059]):
+
+С PC1 выполнили ping и trace до PC2:
+```
+ping 2001:11::a
+trace 2001:11::a
+```
+
+![Проверка связи IPv6 PC1-PC2 по OSPFv3](image/59.png){#fig-059 width=70%}
+
+Пакеты прошли по маршруту:
+- PC1 (2001:10::a)
+- gw-01 (2001:10::1)
+- gw-02 (2001:1::2)
+- gw-03 (2001:2::2)
+- PC2 (2001:11::a)
+
+Это показывает, что OSPFv3 выбрал кратчайший путь через маршрутизатор gw-02.
+
+**10. Проверка таблиц OSPFv3 на gw-01** ([рис. @fig-060]):
+
+```
+show ipv6 ospf6 neighbor
+show ipv6 ospf6 route
+```
+
+![Таблицы OSPFv3 на gw-01](image/60.png){#fig-060 width=70%}
+
+Из вывода команд видно:
+- У маршрутизатора два соседа OSPFv3:
+  - 2.2.2.2 (gw-02) через интерфейс eth1 в состоянии Full/BDR
+  - 4.4.4.4 (gw-04) через интерфейс eth2 в состоянии Full/BDR
+- В таблице маршрутов OSPFv6 отображаются сети IPv6 с указанием следующего перехода:
+  - 2001:1::/64 - непосредственно подключенная сеть
+  - 2001:2::/64 - через fe80::e42:8dff:fef0:0 (gw-02)
+  - 2001:3::/64 - через fe80::e29:b1ff:fe40:1 (gw-04)
+  - 2001:4::/64 - непосредственно подключенная сеть
+  - 2001:10::/64 - непосредственно подключенная сеть
+  - 2001:11::/64 - два равноценных пути:
+    - через fe80::e42:8dff:fef0:0 (gw-02)
+    - через fe80::e29:b1ff:fe40:1 (gw-04)
+
+**11. Проверка отказоустойчивости OSPFv3**:
+
+Отключили интерфейс eth0 на маршрутизаторе gw-02 ([рис. @fig-061]):
+
+```
+configure terminal
+interface eth0
+shutdown
+```
+
+![Отключение интерфейса eth0 на gw-02 для OSPFv3](image/61.png){#fig-061 width=70%}
+
+**12. Проверка таблиц OSPFv3 после отключения пути** ([рис. @fig-062]):
+
+```
+show ipv6 ospf6 route
+```
+
+![Таблица OSPFv3 на gw-01 после отключения gw-02](image/62.png){#fig-062 width=70%}
+
+После отключения gw-02 из таблицы маршрутов исчезли пути через соседа fe80::e42:8dff:fef0:0 (gw-02). Маршрут до сети 2001:11::/64 теперь доступен только через fe80::e29:b1ff:fe40:1 (gw-04).
+
+**13. Проверка связи после изменения топологии** ([рис. @fig-063]):
+
+```
+ping 2001:11::a
+trace 2001:11::a
+```
+
+![Проверка связи IPv6 после отключения gw-02](image/63.png){#fig-063 width=70%}
+
+Теперь пакеты идут по альтернативному пути:
+- PC1 (2001:10::a)
+- gw-01 (2001:10::1)
+- gw-04 (2001:4::1)
+- gw-03 (2001:3::1)
+- PC2 (2001:11::a)
+
+Время перехода на резервный маршрут составило несколько секунд, аналогично OSPFv2.
+
+**14. Восстановление первоначального пути** ([рис. @fig-064]):
+
+Включили интерфейс eth0 на маршрутизаторе gw-02:
+
+```
+configure terminal
+interface eth0
+no shutdown
+```
+
+![Включение интерфейса eth0 на gw-02 для OSPFv3](image/64.png){#fig-064 width=70%}
+
+**15. Проверка связи после восстановления** ([рис. @fig-065]):
+
+```
+ping 2001:11::a
+trace 2001:11::a
+```
+
+![Проверка связи IPv6 после восстановления gw-02](image/65.png){#fig-065 width=70%}
+
+После восстановления интерфейса пакеты снова пошли по первоначальному маршруту через gw-02.
+
+**16. Анализ захваченного трафика OSPFv3** ([рис. @fig-054], [рис. @fig-066], [рис. @fig-067]):
+
+![Захват трафика OSPFv3 (часть 1)](image/54.png){#fig-054 width=70%}
+![Захват трафика OSPFv3 (часть 2)](image/66.png){#fig-066 width=70%}
+![Захват трафика OSPFv3 (часть 3)](image/67.png){#fig-067 width=70%}
+
+На скриншотах анализатора трафика видны:
+
+1. **Пакеты OSPFv3 Hello**: Отправляются на групповой адрес `ff02::5` для обнаружения соседей OSPFv3. В отличие от OSPFv2 (`224.0.0.5`), OSPFv3 использует IPv6-адрес `ff02::5`.
+
+2. **Пакеты RIPv2 и RIPng**: Видны обновления обоих протоколов, так как ранее были настроены оба.
+
+3. **ICMPv6-пакеты**: Ping-запросы и ответы между PC1 (`2001:10::a`) и PC2 (`2001:11::a`).
+
+4. **Neighbor Discovery Protocol (NDP)**: 
+   - Neighbor Solicitation (запросы для разрешения IPv6-адресов в MAC-адреса)
+   - Neighbor Advertisement (ответы на запросы)
+   - Router Advertisement (объявления маршрутизаторов)
+
+5. **Прочие протоколы**: Видны также TCP-сегменты, UDP-пакеты и ICMP-пакеты IPv4.
+
+**Из захваченных пакетов OSPFv3 можно извлечь информацию о:**
+- Идентификаторе маршрутизатора (Router ID)
+- Состоянии соседства
+- Адресах сетей, анонсируемых через OSPFv3
+- Периодичности отправки Hello-пакетов
+- Использовании IPv6-адресов канального уровня (fe80::/10)
+
+OSPFv3, как и OSPFv2, демонстрирует быструю сходимость при изменениях топологии сети, но работает поверх IPv6, используя преимущества нового протокола, такие как более простые заголовки и встроенная поддержка безопасности.
+
+## Построение туннеля IPv6–IPv4
+
+**1. Создание нового проекта в GNS3**
+
+Создан новый проект в GNS3 для выполнения задания по построению туннеля IPv6-IPv4.
+
+**2. Размещение и соединение устройств в соответствии с топологией**
+
+В рабочем пространстве размещены и соединены устройства в соответствии с заданной топологией. Использованы маршрутизаторы VyOS. Топология представлена на рисунке ниже:
+
+![Топология сети для туннеля IPv6-IPv4](image/68.png){#fig-068 width=70%}
+
+**3. Изменение отображаемых названий устройств**
+
+Изменены отображаемые названия устройств согласно требованиям лабораторной работы.
+
+**4. Подключение анализатора трафика**
+
+На соединении между первым и третьим маршрутизаторами подключен анализатор трафика для захвата передаваемых пакетов.
+
+**5. Назначение адресов оконечным устройствам PC1 и PC2**
+
+Назначены адреса оконечным устройствам PC1 и PC2 в соответствии с таблицей адресации.
+
+**PC1-oskalashnikova** ([рис. @fig-069]):
+```
+ip 1000::a/64
+save
+show ipv6
+```
+
+![Настройка адреса IPv6 на PC1](image/69.png){#fig-069 width=70%}
+
+**PC2-oskalashnikova** ([рис. @fig-070]):
+```
+ip 1002::a/64
+save
+show ipv6
+```
+
+![Настройка адреса IPv6 на PC2](image/70.png){#fig-070 width=70%}
+
+**6. Установка системы на маршрутизаторы VyOS**
+
+На маршрутизаторах VyOS выполнена установка системы с помощью команды `install image`. В процессе установки был получен ответ о том, что установка из уже установленной системы невозможна без указания ISO-образа или URL ([рис. @fig-071]):
+
+![Попытка установки системы на VyOS](image/71.png){#fig-071 width=70%}
+
+**7. Настройка имен маршрутизаторов**
+
+На маршрутизаторах изменены имена устройств в соответствии с требованиями лабораторной работы.
+
+**msk-oskalashnikova-gw-01** ([рис. @fig-072]):
+```
+configure
+set system host-name msk-oskalashnikova-gw-01
+compare
+commit
+save
+exit
+reboot
+```
+
+![Настройка имени gw-01](image/72.png){#fig-072 width=70%}
+
+**msk-oskalashnikova-gw-02** ([рис. @fig-073]):
+```
+configure
+set system host-name msk-oskalashnikova-gw-02
+compare
+commit
+save
+exit
+reboot
+```
+
+![Настройка имени gw-02](image/73.png){#fig-073 width=70%}
+
+**msk-oskalashnikova-gw-03** ([рис. @fig-074]):
+```
+configure
+set system host-name msk-oskalashnikova-gw-03
+compare
+commit
+save
+exit
+reboot
+```
+
+![Настройка имени gw-03](image/74.png){#fig-074 width=70%}
+
+**8. Настройка адресов на интерфейсах маршрутизаторов**
+
+Настроены адреса на интерфейсах маршрутизаторов в соответствии с таблицей адресации.
+
+**msk-oskalashnikova-gw-01** ([рис. @fig-075]):
+```
+configure
+set interfaces ethernet eth0 address 1000::1/64
+set interfaces ethernet eth1 address 10.0.0.1/8
+set service router-advert interface eth0 prefix 1000::/64
+commit
+save
+```
+
+![Настройка интерфейсов на gw-01](image/75.png){#fig-075 width=70%}
+
+**msk-oskalashnikova-gw-02** ([рис. @fig-076]):
+```
+configure
+set interfaces ethernet eth0 address 1002::1/64
+set interfaces ethernet eth1 address 20.0.0.2/8
+set service router-advert interface eth0 prefix 1002::/64
+commit
+save
+```
+
+![Настройка интерфейсов на gw-02](image/76.png){#fig-076 width=70%}
+
+**msk-oskalashnikova-gw-03** ([рис. @fig-077]):
+```
+configure
+set interfaces ethernet eth0 address 10.0.0.2/8
+set interfaces ethernet eth1 address 20.0.0.1/8
+commit
+```
+
+При выполнении команды commit возникла ошибка, так как на интерфейсе eth0 уже был настроен DHCP-клиент ([рис. @fig-077]):
+
+![Ошибка при настройке интерфейсов на gw-03](image/77.png){#fig-077 width=70%}
+
+Для решения проблемы необходимо удалить DHCP-конфигурацию с интерфейса eth0 ([рис. @fig-078]):
+
+```
+delete interfaces ethernet eth0 address dhcp
+commit
+```
+
+![Удаление DHCP-конфигурации с eth0](image/78.png){#fig-078 width=70%}
+
+После этого можно повторно настроить статический адрес на интерфейсе eth0.
+
+**9. Проверка появления адресов маршрутизаторов на PC**
+
+После настройки маршрутизаторов проверили появление адресов ближайших маршрутизаторов на PC.
+
+**PC1-oskalashnikova** ([рис. @fig-079]):
+```
+show ipv6
+```
+
+![Проверка IPv6-адресов на PC1](image/79.png){#fig-079 width=70%}
+
+**PC2-oskalashnikova** ([рис. @fig-080]):
+```
+show ipv6
+```
+
+![Проверка IPv6-адресов на PC2](image/80.png){#fig-080 width=70%}
+
+Из вывода команд видно, что на PC появились:
+- Локальный IPv6-адрес (link-local): `fe80::250:79ff:fe66:6800/64` для PC1 и `fe80::250:79ff:fe66:6801/64` для PC2
+- Глобальный IPv6-адрес: `1000::a/64` для PC1 и `1002::a/64` для PC2
+- MAC-адрес маршрутизатора в поле ROUTER LINK-LAYER
+
+**10. Проверка маршрутов с маршрутизатора R1**
+
+Проверили доступность других маршрутизаторов с маршрутизатора R1 ([рис. @fig-081]):
+
+```
+ping 10.0.0.2 -c 3
+ping 20.0.0.1 -c 3
+ping 20.0.0.2 -c 3
+```
+
+![Проверка доступности маршрутизаторов](image/81.png){#fig-081 width=70%}
+
+**Результаты проверки:**
+- `10.0.0.2` (gw-03, интерфейс eth0) - доступен, среднее время отклика 2.635 мс
+- `20.0.0.1` (gw-03, интерфейс eth1) - недоступен, сеть недостижима
+- `20.0.0.2` (gw-02, интерфейс eth1) - недоступен, сеть недостижима
+
+**Анализ результатов:**
+Маршрутизатор gw-01 может связаться только с gw-03 через напрямую подключенную сеть `10.0.0.0/8`. Маршруты до сетей `20.0.0.0/8` отсутствуют, так как на маршрутизаторе gw-03 не настроена маршрутизация между интерфейсами eth0 и eth1. Это видно из анализа трафика, где пакеты до `20.0.0.1` и `20.0.0.2` не отправляются дальше gw-03.
+
+**11. Настройка маршрутизации IPv4**
+
+Настроили динамическую маршрутизацию IPv4 по протоколу RIP для обеспечения связности между всеми сетями IPv4.
+
+**msk-oskalashnikova-gw-01**:
+```
+configure
+set protocols rip network 10.0.0.0/8
+commit
+save
+```
+
+**msk-oskalashnikova-gw-02**:
+```
+configure
+set protocols rip network 20.0.0.0/8
+commit
+save
+```
+
+**msk-oskalashnikova-gw-03**:
+```
+configure
+set protocols rip network 10.0.0.0/8
+set protocols rip network 20.0.0.0/8
+commit
+save
+```
+
+**12. Проверка маршрутов после настройки RIP**
+
+После настройки RIP проверили доступность всех маршрутизаторов с gw-01.
+
+**Настройка протокола RIP на маршрутизаторах:**
+
+**msk-oskalashnikova-gw-01** ([рис. @fig-083]):
+```
+configure
+set protocols rip network 10.0.0.0/8
+commit
+save
+```
+
+![Настройка RIP на gw-01](image/83.png){#fig-083 width=70%}
+
+**msk-oskalashnikova-gw-02** ([рис. @fig-084]):
+```
+configure
+set protocols rip network 20.0.0.0/8
+commit
+save
+```
+
+![Настройка RIP на gw-02](image/84.png){#fig-084 width=70%}
+
+**msk-oskalashnikova-gw-03** ([рис. @fig-085]):
+```
+configure
+set protocols rip network 10.0.0.0/8
+set protocols rip network 20.0.0.0/8
+commit
+save
+```
+
+![Настройка RIP на gw-03](image/85.png){#fig-085 width=70%}
+
+**Проверка доступности после настройки RIP** ([рис. @fig-086]):
+```
+ping 10.0.0.2 -c 3
+ping 20.0.0.1 -c 3
+ping 20.0.0.2 -c 3
+```
+
+![Проверка доступности маршрутизаторов после настройка RIP](image/86.png){#fig-086 width=70%}
+
+**Результаты проверки:**
+- `10.0.0.2` (gw-03, интерфейс eth0) - доступен, среднее время отклика 3.755 мс
+- `20.0.0.1` (gw-03, интерфейс eth1) - доступен, среднее время отклика 2.144 мс
+- `20.0.0.2` (gw-02, интерфейс eth1) - доступен, среднее время отклика 3.261 мс
+
+**Анализ трафика:**
+После настройки RIP видно, что маршрутизаторы начали обмениваться обновлениями маршрутов ([рис. @fig-087]). На скриншоте анализатора трафика видны:
+
+1. **RIPv2 пакеты**: 
+   - Запросы и ответы RIPv2 отправляются на групповой адрес `224.0.0.9`
+   - Маршрутизаторы обмениваются информацией о доступных сетях
+
+2. **ICMP пакеты**:
+   - Ping-запросы и ответы между маршрутизаторами
+   - `10.0.0.1` → `10.0.0.2` (прямое соединение)
+   - `20.0.0.1` → `10.0.0.1` (через gw-03)
+   - `20.0.0.2` → `10.0.0.1` (через gw-03 → gw-02)
+
+3. **ARP пакеты**:
+   - Разрешение IP-адресов в MAC-адреса для соседних устройств
+
+4. **IGMP пакеты**:
+   - Membership Report для присоединения к группе `224.0.0.9` (RIPv2)
+
+![Анализ трафика после настройки RIP](image/87.png){#fig-087 width=70%}
+
+Пакеты ping до `20.0.0.1` и `20.0.0.2` теперь успешно проходят, так как gw-03 узнал маршрут до сети `20.0.0.0/8` от gw-02 через RIP и может транзитировать трафик между сетями `10.0.0.0/8` и `20.0.0.0/8`.
+
+**13. Создание туннеля IPv6 через сеть IPv4**
+
+Создали туннель IPv6 поверх IPv4 между gw-01 и gw-02 для передачи трафика IPv6 через сеть IPv4.
+
+**msk-oskalashnikova-gw-01** ([рис. @fig-088]):
+```
+configure
+set interfaces tunnel tun0 encapsulation sit
+set interfaces tunnel tun0 source-address 10.0.0.1
+set interfaces tunnel tun0 remote 20.0.0.2
+set interfaces tunnel tun0 address 1001::1/64
+commit
+save
+```
+
+![Настройка туннеля на gw-01](image/88.png){#fig-088 width=70%}
+
+**msk-oskalashnikova-gw-02** ([рис. @fig-089]):
+```
+configure
+set interfaces tunnel tun0 encapsulation sit
+set interfaces tunnel tun0 source-address 20.0.0.2
+set interfaces tunnel tun0 remote 10.0.0.1
+set interfaces tunnel tun0 address 1001::2/64
+commit
+save
+```
+
+![Настройка туннеля на gw-02](image/89.png){#fig-089 width=70%}
+
+**14. Настройка статической маршрутизации IPv6**
+
+Настроили статические маршруты IPv6 для указания, что трафик до удаленных IPv6-сетей должен идти через туннель.
+
+**msk-oskalashnikova-gw-01** ([рис. @fig-091]):
+```
+configure
+set protocols static route6 1002::0/64 next-hop 1001::2
+commit
+save
+```
+
+![Настройка статического маршрута IPv6 на gw-01](image/91.png){#fig-091 width=70%}
+
+**msk-oskalashnikova-gw-02** ([рис. @fig-092]):
+```
+configure
+set protocols static route6 1000::0/64 next-hop 1001::1
+commit
+save
+```
+
+![Настройка статического маршрута IPv6 на gw-02](image/92.png){#fig-092 width=70%}
+
+**msk-oskalashnikova-gw-03** ([рис. @fig-090]):
+```
+configure
+set protocols static route6 1002::0/64 next-hop 1001::2
+commit
+save
+```
+
+![Настройка статического маршрута IPv6 на gw-03](image/90.png){#fig-090 width=70%}
+
+**15. Проверка доступности оконечных устройств**
+
+Проверили доступность PC2 с PC1 и наоборот через туннель IPv6-IPv4.
+
+**PC1-oskalashnikova → PC2-oskalashnikova** ([рис. @fig-093]):
+```
+ping 1002::a
+trace 1002::a
+```
+
+![Проверка связи PC1 → PC2 через туннель](image/93.png){#fig-093 width=70%}
+
+**PC2-oskalashnikova → PC1-oskalashnikova** ([рис. @fig-094]):
+```
+ping 1000::a
+trace 1000::a
+```
+
+![Проверка связи PC2 → PC1 через туннель](image/94.png){#fig-094 width=70%}
+
+**Результаты проверки:**
+- PC1 успешно ping-ует PC2 (`1002::a`) со средним временем отклика 7.138 мс
+- PC2 успешно ping-ует PC1 (`1000::a`) со средним временем отклика 7.441 мс
+- Команда trace показывает путь через туннель:
+  - PC1 → gw-01 (1000::1) → туннель tun0 (1001::1 → 1001::2) → gw-02 (1002::1) → PC2 (1002::a)
+  - PC2 → gw-02 (1002::1) → туннель tun0 (1001::2 → 1001::1) → gw-01 (1000::1) → PC1 (1000::a)
+
+**Анализ трафика:**
+Из данных, собранных анализатором трафика ([рис. @fig-095]), видно, что IPv6-пакеты инкапсулируются в IPv4-пакеты при прохождении через туннель. На скриншоте видны:
+
+1. **RIPv2 пакеты**: Обновления маршрутной информации между маршрутизаторами.
+
+2. **ICMPv6 пакеты**: 
+   - Echo request (ping) и reply между PC1 (`1000::a`) и PC2 (`1002::a`)
+   - TTL (hop limit) уменьшается с 63 до 61 при прохождении через туннель
+
+3. **ARP пакеты**: Разрешение адресов `10.0.0.1` и `10.0.0.2`
+
+![Анализ трафика через туннель IPv6-IPv4](image/95.png){#fig-095 width=70%}
+
+**Из захваченных пакетов можно извлечь информацию о:**
+1. **Инкапсуляции IPv6 в IPv4**: 
+   - В заголовках IPv4-пакетов поле протокола имеет значение 41 (IPv6-in-IPv4 инкапсуляция)
+   - Исходный адрес: `10.0.0.1` (gw-01, eth1)
+   - Адрес назначения: `20.0.0.2` (gw-02, eth1)
+
+2. **Содержимом туннеля**:
+   - Внутри IPv4-пакетов находятся полные IPv6-пакеты
+   - Исходный IPv6-адрес: `1000::a` (PC1)
+   - Адрес назначения IPv6: `1002::a` (PC2)
+   - Протокол верхнего уровня: ICMPv6 (ping)
+
+3. **Накладных расходах**:
+   - Размер заголовка IPv4: 20 байт
+   - Максимальный размер IPv6-пакета без фрагментации: 1480 байт (при MTU=1500)
+
+## Задание для самостоятельного выполнения
+
+### Настройка двойного стека IPv4 и IPv6
+
+Были настроены IPv4 и IPv6 адреса на всех маршрутизаторах согласно методичке. 
+
+На gw-01 настроены интерфейсы ([рис. @fig-099]):
+
+![Настройка интерфейсов gw-01](image/99.png){#fig-099 width=70%}
+
+На gw-02 настроены интерфейсы ([рис. @fig-100]):
+
+![Настройка интерфейсов gw-02](image/100.png){#fig-100 width=70%}
+
+На gw-03 настроены интерфейсы ([рис. @fig-101]):
+
+![Настройка интерфейсов gw-03](image/101.png){#fig-101 width=70%}
+
+На gw-04 настроены интерфейсы ([рис. @fig-102]):
+
+![Настройка интерфейсов gw-04](image/102.png){#fig-102 width=70%}
+
+На PC1 назначены адреса ([рис. @fig-097]):
+
+![Настройка адресов PC1](image/97.png){#fig-097 width=70%}
+
+На PC2 назначены адреса ([рис. @fig-098]):
+
+![Настройка адресов PC2](image/98.png){#fig-098 width=70%}
+
+Проверка связи между PC1 и PC2 показала, что без настройки маршрутизации связь отсутствует ([рис. @fig-103]):
+
+![Проверка связи PC1 → PC2 до маршрутизации](image/103.png){#fig-103 width=70%}
+
+Аналогично с PC2 до PC1 ([рис. @fig-104]):
+
+![Проверка связи PC2 → PC1 до маршрутизации](image/104.png){#fig-104 width=70%}
+
+### Настройка динамической маршрутизации RIP
+
+Для обеспечения связности настроен протокол RIP версии 2 для IPv4.
+
+На gw-01 включен RIP на интерфейсах ([рис. @fig-105]):
+
+![Настройка RIP на gw-01](image/105.png){#fig-105 width=70%}
+
+На gw-02 включен RIP на интерфейсах ([рис. @fig-106]):
+
+![Настройка RIP на gw-02](image/106.png){#fig-106 width=70%}
+
+На gw-03 включен RIP на интерфейсах ([рис. @fig-107]):
+
+![Настройка RIP на gw-03](image/107.png){#fig-107 width=70%}
+
+На gw-04 включен RIP на интерфейсах ([рис. @fig-108]):
+
+![Настройка RIP на gw-04](image/108.png){#fig-108 width=70%}
+
+### Проверка таблиц маршрутизации RIP
+
+На gw-01 команда `show ip rip` показывает подключенные сети и полученные маршруты ([рис. @fig-113]):
+
+![Таблица RIP на gw-01](image/113.png){#fig-113 width=70%}
+
+Команда `show ipv6 ripng` показывает полученные через RIPng маршруты IPv6 ([рис. @fig-113]):
+
+![Таблица RIPng на gw-01](image/113.png){#fig-113 width=70%}
+
+На gw-02 команда `show ip rip` показывает только подключенные сети ([рис. @fig-114]):
+
+![Таблица RIP на gw-02](image/114.png){#fig-114 width=70%}
+
+Команда `show ipv6 ripng` показывает маршруты IPv6 ([рис. @fig-114]):
+
+![Таблица RIPng на gw-02](image/114.png){#fig-114 width=70%}
+
+На gw-03 команда `show ip rip` показывает подключенные сети и полученные маршруты ([рис. @fig-115]):
+
+![Таблица RIP на gw-03](image/115.png){#fig-115 width=70%}
+
+Команда `show ipv6 ripng` показывает полученные маршруты IPv6 ([рис. @fig-115]):
+
+![Таблица RIPng на gw-03](image/115.png){#fig-115 width=70%}
+
+### Настройка RIPng для IPv6
+
+Для IPv6 настроен протокол RIPng на всех маршрутизаторах.
+
+На gw-01 включен RIPng на интерфейсах ([рис. @fig-109]):
+
+![Настройка RIPng на gw-01](image/109.png){#fig-109 width=70%}
+
+На gw-02 включен RIPng на интерфейсах ([рис. @fig-110]):
+
+![Настройка RIPng на gw-02](image/110.png){#fig-110 width=70%}
+
+На gw-03 включен RIPng на интерфейсах ([рис. @fig-111]):
+
+![Настройка RIPng на gw-03](image/111.png){#fig-111 width=70%}
+
+На gw-04 включен RIPng на интерфейсах ([рис. @fig-112]):
+
+![Настройка RIPng на gw-04](image/112.png){#fig-112 width=70%}
+
+## Настройка протокола OSPF для IPv4 и IPv6
+
+### Настройка OSPFv2 для IPv4
+
+На gw-01 настроен OSPFv2 для сетей IPv4 ([рис. @fig-117]):
+
+![Настройка OSPFv2 на gw-01](image/117.png){#fig-117 width=70%}
+
+На gw-02 настроен OSPFv2 для сетей IPv4 ([рис. @fig-118]):
+
+![Настройка OSPFv2 на gw-02](image/118.png){#fig-118 width=70%}
+
+На gw-03 настроен OSPFv2 для сетей IPv4 ([рис. @fig-119]):
+
+![Настройка OSPFv2 на gw-03](image/119.png){#fig-119 width=70%}
+
+На gw-04 настроен OSPFv2 для сетей IPv4 ([рис. @fig-120]):
+
+![Настройка OSPFv2 на gw-04](image/120.png){#fig-120 width=70%}
+
+### Настройка OSPFv3 для IPv6
+
+На gw-01 настроен OSPFv3 для IPv6 с router-id 1.1.1.1 ([рис. @fig-121]):
+
+![Настройка OSPFv3 на gw-01](image/121.png){#fig-121 width=70%}
+
+На gw-02 настроен OSPFv3 для IPv6 с router-id 2.2.2.2 ([рис. @fig-122]):
+
+![Настройка OSPFv3 на gw-02](image/122.png){#fig-122 width=70%}
+
+На gw-03 настроен OSPFv3 для IPv6 с router-id 3.3.3.3 ([рис. @fig-123]):
+
+![Настройка OSPFv3 на gw-03](image/123.png){#fig-123 width=70%}
+
+На gw-04 настроен OSPFv3 для IPv6 с router-id 4.4.4.4 ([рис. @fig-124]):
+
+![Настройка OSPFv3 на gw-04](image/124.png){#fig-124 width=70%}
+
+### Проверка соседей OSPF
+
+На gw-01 проверены соседи OSPF ([рис. @fig-125]):
+
+![Соседи OSPF на gw-01](image/125.png){#fig-125 width=70%}
+
+На gw-02 проверены соседи OSPF ([рис. @fig-126]):
+
+![Соседи OSPF на gw-02](image/126.png){#fig-126 width=70%}
+
+На gw-03 проверены соседи OSPF ([рис. @fig-127]):
+
+![Соседи OSPF на gw-03](image/127.png){#fig-127 width=70%}
+
+На gw-04 проверены соседи OSPF ([рис. @fig-128]):
+
+![Соседи OSPF на gw-04](image/128.png){#fig-128 width=70%}
+
+### Проверка связи после настройки OSPF
+
+После настройки OSPF проверена связь между PC1 и PC2 ([рис. @fig-129]):
+
+![Проверка связи после OSPF](image/129.png){#fig-129 width=70%}
+
+### Сравнение таблиц маршрутизации
+
+На gw-01 проверена полная таблица маршрутизации ([рис. @fig-131]):
+
+![Таблица маршрутизации gw-01](image/131.png){#fig-131 width=70%}
+
+Видно, что маршруты OSPF имеют административное расстояние 110, а RIP - 120. Для сети 10.10.1.64/28 доступны два пути через OSPF с метрикой 300.
+
+### Дополнительные проверки OSPF
+
+На gw-03 проверены соседи OSPF после полной настройки ([рис. @fig-130]):
+
+![Соседи OSPF на gw-03 после настройки](image/130.png){#fig-130 width=70%}
+
+На gw-02 проверены соседи OSPF после полной настройки ([рис. @fig-132]):
+
+![Соседи OSPF на gw-02 после настройки](image/132.png){#fig-132 width=70%}
 
 # Выводы
 
-Здесь кратко описываются итоги проделанной работы.
+В ходе выполнения лабораторной работы №8 мы получили изучили принципы маршрутизации в IPv4- и IPv6-сетях и принципы настройки сетевого оборудования.
 
-# Список литературы{.unnumbered}
+# Список литературы
 
-::: {#refs}
-:::
+1. [Лаборатораня работа №8](https://esystem.rudn.ru/pluginfile.php/2858387/mod_resource/content/1/008-lab_routing-GNS3.pdf)
